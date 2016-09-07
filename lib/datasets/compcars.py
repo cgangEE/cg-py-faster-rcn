@@ -5,17 +5,30 @@ import numpy as np
 import scipy.sparse
 import scipy.io as sio
 import cPickle
+import uuid
 
 class compcars(imdb):
     def __init__(self, image_set):
         imdb.__init__(self, 'compcars_' + image_set)
         self._image_set = image_set
         self._data_path = os.path.join(cfg.DATA_DIR, 'compcars')
-        self._classes = ('__background__', 'car')
+
+        self._classes = ('background', 'car')
         self._class_to_ind = dict(zip(self.classes, xrange(self.num_classes)))
 
         self._image_index = self._load_image_set_index()
         self._image_ext = '.jpg'
+        self._roidb_handler = self.gt_roidb
+
+
+        self._salt = str(uuid.uuid4())
+        self._comp_id = 'comp5'
+
+        self.config = {'cleanup'     : True,
+                       'use_salt'    : True,
+                       'matlab_eval' : False,
+                       'rpn_file'    : None,
+                       'min_size'    : 2}
 
         assert os.path.exists(self._data_path), \
                 'Path does not exist: {}'.format(self._data_path)
@@ -69,10 +82,10 @@ class compcars(imdb):
             lineIdx = lineIdx + 1
             if lineIdx == 3:
                 ret = self._strToList(line)
-                x1 = float(ret[0]) - 1
-                y1 = float(ret[1]) - 1
-                x2 = float(ret[2]) - 1
-                y2 = float(ret[3]) - 1
+                x1 = float(ret[0])
+                y1 = float(ret[1])
+                x2 = float(ret[2])
+                y2 = float(ret[3])
 
         num_objs = 1
 
@@ -91,6 +104,7 @@ class compcars(imdb):
         seg_areas[ix] = (x2 - x1 + 1) * (y2 - y1 + 1)
 
         overlaps = scipy.sparse.csr_matrix(overlaps)
+
 
         return {'boxes' : boxes,
                 'gt_classes': gt_classes,
@@ -111,8 +125,15 @@ class compcars(imdb):
         return image_path
 
     def rpn_roidb(self):
-        roidb = self._load_rpn_roidb(None)
+        if self._image_set != 'test':
+            gt_roidb = self.gt_roidb()
+            rpn_roidb = self._load_rpn_roidb(gt_roidb)
+            roidb = imdb.merge_roidbs(gt_roidb, rpn_roidb)
+        else:
+            roidb = self._load_rpn_roidb(None)
+
         return roidb
+
 
     def _load_rpn_roidb(self, gt_roidb):
         filename = self.config['rpn_file']
@@ -122,3 +143,11 @@ class compcars(imdb):
         with open(filename, 'rb') as f:
             box_list = cPickle.load(f)
         return self.create_roidb_from_box_list(box_list, gt_roidb)
+
+    def competition_mode(self, on):
+        if on:
+            self.config['use_salt'] = False
+            self.config['cleanup'] = False
+        else:
+            self.config['use_salt'] = True
+            self.config['cleanup'] = True
