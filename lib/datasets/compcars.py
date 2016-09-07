@@ -11,7 +11,7 @@ class compcars(imdb):
         imdb.__init__(self, 'compcars_' + image_set)
         self._image_set = image_set
         self._data_path = os.path.join(cfg.DATA_DIR, 'compcars')
-        self._classes = tuple(range(164))
+        self._classes = ('__background__', 'car')
         self._class_to_ind = dict(zip(self.classes, xrange(self.num_classes)))
 
         self._image_index = self._load_image_set_index()
@@ -82,7 +82,7 @@ class compcars(imdb):
         seg_areas = np.zeros((num_objs), dtype=np.float32)
 
         ix = 0
-        cls = int(index[:index.find('/')])
+        cls = 1
 
 
         boxes[ix, :] = [x1, y1, x2, y2]
@@ -111,13 +111,7 @@ class compcars(imdb):
         return image_path
 
     def rpn_roidb(self):
-        print ''
-        print '------------------------------------>'
-        print ''
         roidb = self._load_rpn_roidb(None)
-        print ''
-        print '------------------------------------>'
-        print ''
         return roidb
 
     def _load_rpn_roidb(self, gt_roidb):
