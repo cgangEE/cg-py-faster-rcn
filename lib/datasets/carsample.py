@@ -8,15 +8,15 @@ import cPickle
 import uuid
 
 class carsample(imdb):
-    def __init__(self, image_set):
-        imdb.__init__(self, 'carsample_' + image_set)
+    def __init__(self, image_set, num = None):
+        imdb.__init__(self, 'carsample_' + image_set + str(num))
         self._image_set = image_set
         self._data_path = os.path.join(cfg.DATA_DIR, 'carsample')
 
         self._classes = ('background', 'car')
         self._class_to_ind = dict(zip(self.classes, xrange(self.num_classes)))
 
-        self._image_index = self._load_image_set_index()
+        self._image_index = self._load_image_set_index(num)
         self._image_ext = '.jpg'
         self._roidb_handler = self.gt_roidb
 
@@ -34,29 +34,45 @@ class carsample(imdb):
                 'Path does not exist: {}'.format(self._data_path)
 
 
-    def _load_image_set_index(self):
-        image_set_file = os.path.join(self._data_path, 
-                                      self._image_set + '.txt')
-        assert os.path.exists(image_set_file), \
-                'Path does not exist: {}'.format(image_set_file)
-        with open(image_set_file) as f:
-            image_index = [x.strip() for x in f.readlines()]
+    def _load_image_set_index(self, num):
+        if num == None:
+            image_set_file = os.path.join(self._data_path, 
+                                          self._image_set + '.txt')
+            assert os.path.exists(image_set_file), \
+                    'Path does not exist: {}'.format(image_set_file)
+            with open(image_set_file) as f:
+                image_index = [x.strip() for x in f.readlines()]
+        else:
+            image_index = []
+            for i in range(5):
+                if i != num:
+                    image_set_file = os.path.join(self._data_path, 
+                                                  self._image_set + str(i) + '.txt')
+                    assert os.path.exists(image_set_file), \
+                            'Path does not exist: {}'.format(image_set_file)
+                    with open(image_set_file) as f:
+                        image_index += [x.strip() for x in f.readlines()]
+
         return image_index
 
 
     def gt_roidb(self):
+        '''
         cache_file = os.path.join(self.cache_path, self.name + '_gt_roidb.pkl')
         if os.path.exists(cache_file):
             with open(cache_file, 'rb') as fid:
                 roidb = cPickle.load(fid)
             print '{} gt roidb loaded from {}'.format(self.name, cache_file)
             return roidb
+        '''
 
         gt_roidb = [self._load_compcars_annotation(index)
                     for index in self.image_index]
+        '''
         with open(cache_file, 'wb') as fid:
             cPickle.dump(gt_roidb, fid, cPickle.HIGHEST_PROTOCOL)
         print 'wrote gt roidb to {}'.format(cache_file)
+        '''
 
         return gt_roidb
 

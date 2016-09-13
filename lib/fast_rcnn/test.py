@@ -291,5 +291,7 @@ def test_net(net, imdb, max_per_image=100, thresh=0.05, vis=False):
     with open(det_file, 'wb') as f:
         cPickle.dump(all_boxes, f, cPickle.HIGHEST_PROTOCOL)
 
+'''
     print 'Evaluating detections'
     imdb.evaluate_detections(all_boxes, output_dir)
+'''

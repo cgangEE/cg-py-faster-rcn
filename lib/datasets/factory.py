@@ -39,9 +39,18 @@ for split in ['train', 'val', 'trainval']:
     __sets[name] = (lambda split=split: compcars(split))
 
 
+# Set up carsimple_<split>
+
 for split in ['train', 'val', 'trainval']:
     name = 'carsample_{}'.format(split)
     __sets[name] = (lambda split=split: carsample(split))
+
+
+for split in ['fold']:
+    for num in range(5):
+        name = 'carsample_{}{}'.format(split, num)
+        __sets[name] = (lambda split=split: carsample(split, num))
+
 
 def get_imdb(name):
     """Get an imdb (image database) by name."""
