@@ -53,14 +53,33 @@ def IoU(box, gt_box):
 
     return 0.0
 
-def eval():
+def plotCurve(x, y, labelName):
+    plt.plot(x, y, label=labelName)
+    plt.xlabel('Recall')
+    plt.ylabel('Precision')
+    plt.show()
+
+def calculateAP(rec, prec):
+    ap = 0.0
+    p = 0.0
+    for x in range(11):
+        tmp = prec[rec>=x/10.0]
+        if tmp.shape == (0,):
+            p = 0.0;
+        else:
+            p = tmp.max()
+        ap += p / 11.0
+    return ap
+
+def eval(image_set):
     cache_file = os.path.join(cfg.ROOT_DIR,
-    'output/faster_rcnn_alt_opt/carsample_val/ZF_faster_rcnn_final/detections.pkl')
+    'output/faster_rcnn_alt_opt/'+image_set+'/ZF_faster_rcnn_final/detections.pkl')
 
     if os.path.exists(cache_file):
         with open(cache_file, 'rb') as fid:
             boxes = cPickle.load(fid)
 
+    
     imdb = get_imdb('carsample_val')
     num_images = len(imdb.image_index)
     roidb = imdb.roidb
@@ -112,25 +131,15 @@ def eval():
     rec = tp / gt_box_num;
     prec = tp / (fp + tp)
 
-    ap = 0.0
-    p = 0.0
-    for x in range(11):
-        tmp = prec[rec>=x/10.0]
-        if tmp.shape == (0,):
-            p = 0.0;
-        else:
-            p = tmp.max()
-        ap += p / 11.0
-        
+    for i in range(prec.shape[0]): 
+        if prec[i] > 0.99:
+            print '%lf %lf %lf' % (prec[i], rec[i], bb[i][-1])
+'''        
+    ap = calculateAP(rec, prec)
     print 'AP is %.10lf' % ap
-
-'''
-    plt.plot(rec, prec, label='Precision-Recall curve')
-    plt.xlabel('Recall')
-    plt.ylabel('Precision')
-    plt.show()
+    plotCurve(rec, prec, 'Precision-Recall curve')
 '''
 
 if __name__ == '__main__':
-    eval()
+    eval('carsample_valNone')
 

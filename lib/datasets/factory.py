@@ -13,6 +13,7 @@ from datasets.pascal_voc import pascal_voc
 from datasets.coco import coco
 from datasets.compcars import compcars
 from datasets.carsample import carsample
+from datasets.vehicle import vehicle
 import numpy as np
 
 # Set up voc_<year>_<split> using selective search "fast" mode
@@ -50,6 +51,11 @@ for split in ['fold']:
     for num in range(5):
         name = 'carsample_{}{}'.format(split, num)
         __sets[name] = (lambda split=split: carsample(split, num))
+
+# Set up vehicle_<split>
+for split in ['train', 'val', 'trainval']:
+    name = 'vehicle_{}'.format(split)
+    __sets[name] = (lambda split=split: vehicle(split))
 
 
 def get_imdb(name):
