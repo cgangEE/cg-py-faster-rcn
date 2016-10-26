@@ -142,5 +142,5 @@ def eval(image_set):
 '''
 
 if __name__ == '__main__':
-    eval('carsample_valNone')
+    eval('tattoo_val')
 

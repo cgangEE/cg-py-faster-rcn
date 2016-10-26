@@ -5,7 +5,6 @@ import os
 from fast_rcnn.config import cfg
 import numpy as np
 from datasets.factory import get_imdb
-import matplotlib.pyplot as plt
 import cv2
 import matplotlib.pyplot as plt
 import random
@@ -44,9 +43,11 @@ def showVehicleBox(image_set):
     num_images = len(imdb.image_index)
 
     for i in xrange(num_images):
-        if random.randint(1, 100000) > 3:
-            continue
+#        if random.randint(1, 100000) > 3:
+#            continue
         print i
+        if i == 10:
+            break
 
         im_file = imdb.image_path_at(i)
         im = cv2.imread(im_file)

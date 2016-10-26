@@ -119,7 +119,9 @@ if __name__ == '__main__':
 
     prototxt = os.path.join(cfg.MODELS_DIR, NETS[args.demo_net][0],
                             'faster_rcnn_alt_opt', 'faster_rcnn_test.pt')
-    caffemodel = '/home/cgangee/code/cg-py-faster-rcnn/output/faster_rcnn_alt_opt/carsample_train/ZF_faster_rcnn_final.caffemodel'
+    print(prototxt)
+
+    caffemodel = '/home/cgangee/code/cg-py-faster-rcnn/output/faster_rcnn_alt_opt/tattoo_train/ZF_faster_rcnn_final.caffemodel'
 
     if not os.path.isfile(caffemodel):
         raise IOError(('{:s} not found.\nDid you run ./data/script/'
@@ -140,8 +142,8 @@ if __name__ == '__main__':
     for i in xrange(2):
         _, _= im_detect(net, im)
 
-    im_names = [ '00001.jpg',  '00059.jpg',  
-                    '00036.jpg' ]
+    im_names = [ '1.jpg',  '2.jpg',  
+                    '3.jpg' ]
     for im_name in im_names:
         print '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
         print 'Demo for data/demo/{}'.format(im_name)

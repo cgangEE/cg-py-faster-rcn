@@ -14,6 +14,8 @@ from datasets.coco import coco
 from datasets.compcars import compcars
 from datasets.carsample import carsample
 from datasets.vehicle import vehicle
+from datasets.tattoo import tattoo
+
 import numpy as np
 
 # Set up voc_<year>_<split> using selective search "fast" mode
@@ -41,7 +43,6 @@ for split in ['train', 'val', 'trainval']:
 
 
 # Set up carsimple_<split>
-
 for split in ['train', 'val', 'trainval']:
     name = 'carsample_{}'.format(split)
     __sets[name] = (lambda split=split: carsample(split))
@@ -56,6 +57,12 @@ for split in ['fold']:
 for split in ['train', 'val', 'trainval']:
     name = 'vehicle_{}'.format(split)
     __sets[name] = (lambda split=split: vehicle(split))
+
+
+# Set up tattoo_<split>
+for split in ['train', 'val', 'trainval']:
+    name = 'tattoo_{}'.format(split)
+    __sets[name] = (lambda split=split: tattoo(split))
 
 
 def get_imdb(name):
